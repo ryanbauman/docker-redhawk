@@ -1,0 +1,5 @@
+[redhawk]
+name=REDHAWK 1.10.0
+baseurl=http://redhawk-yum.s3-website-us-east-1.amazonaws.com/
+enabled=1
+gpgcheck=0
