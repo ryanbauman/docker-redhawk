@@ -6,3 +6,9 @@ dependencies:
   override:
     - docker info
     - docker build -t ryanbauman/redhawk .
+
+test:
+  override:
+    - docker run -i -t ryanbauman/redhawk
+    - sudo service omniNames start
+    - sudo service omniEvents start
