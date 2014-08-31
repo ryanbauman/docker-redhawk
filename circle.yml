@@ -9,6 +9,4 @@ dependencies:
 
 test:
   override:
-    - docker run -i -t ryanbauman/redhawk
-    - sudo service omniNames start
-    - sudo service omniEvents start
+    - docker run -i -t ryanbauman/redhawk bash -l -c 'sudo service omniNames start && sudo service omniEvents start'
