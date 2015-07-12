@@ -29,7 +29,11 @@ Run the image and mount the volume to the container.  Additionally, set the disp
 
 At the shell prompt, retrieve the REDHAWK IDE from sourceforge and unpack it:
 
-    curl -L http://sourceforge.net/projects/redhawksdr/files/redhawk/1.10.0/el6/x86_64/redhawk-ide-1.10.0.R201407290010-linux.gtk.x86_64.tar.gz |tar zx
+    curl -L http://sourceforge.net/projects/redhawksdr/files/redhawk/1.10.2/el6/x86_64/redhawk-ide-1.10.2.R201501300031-linux.gtk.x86_64.tar.gz | tar zx
+
+Install minimal gtk support:
+
+    sudo yum install -y PackageKit-gtk-module libcanberra-gtk2
 
 Verify that the REDHAWK IDE can be launched and displays correctly on the host system:
 
