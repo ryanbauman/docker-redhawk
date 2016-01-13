@@ -22,31 +22,41 @@ RUN yum update -y && \
 
 COPY omniORB.cfg /etc/
 
-#configure default user
-RUN mkdir -p /home/redhawk
-RUN cp /etc/skel/.bash* /home/redhawk && chown -R redhawk. /home/redhawk
-RUN usermod -a -G wheel --shell /bin/bash redhawk
-RUN echo "%wheel        ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
-
-#Define environment
-ENV HOME /home/redhawk
+# Define REDHAWK environment
 ENV OSSIEHOME /usr/local/redhawk/core
 ENV SDRROOT /var/redhawk/sdr
-ENV PYTHONPATH /usr/local/redhawk/core/lib64/python:/usr/local/redhawk/core/lib/python
-ENV PATH /usr/local/redhawk/core/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-WORKDIR /home/redhawk
-USER redhawk
+ENV PYTHONPATH ${OSSIEHOME}/lib64/python:${OSSIEHOME}/lib/python
+ENV PATH ${OSSIEHOME}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-#Run nodeconfig
-RUN /var/redhawk/sdr/dev/devices/GPP/python/nodeconfig.py --silent \
-    --clean \
-    --gpppath=/devices/GPP \
-    --disableevents \
-    --domainname=REDHAWK_DEV \
-    --sdrroot=/var/redhawk/sdr \
-    --inplace \
-    --nodename DevMgr_default
+# Configure default user
+ENV RHUSER redhawk
+ENV HOME /home/${RHUSER}
+RUN mkdir -p ${HOME}
+RUN cp /etc/skel/.bash* ${HOME}
+RUN chown -R ${RHUSER}. ${HOME}
+RUN usermod -a -G wheel --shell /bin/bash ${RHUSER}
+RUN echo "%wheel        ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
 
+# Forward environment variables to downstream images
+ONBUILD ENV RHUSER ${RHUSER}
+ONBUILD ENV HOME ${HOME}
+ONBUILD ENV OSSIEHOME ${OSSIEHOME}
+ONBUILD ENV SDRROOT ${SDRROOT}
+ONBUILD ENV PYTHONPATH ${PYTHONPATH}
+ONBUILD ENV PATH ${PATH}
+
+# Clean and configure omni to kickoff on startup
+RUN ${OSSIEHOME}/bin/cleanomni
+RUN /sbin/chkconfig --level 345 omniNames on
+RUN /sbin/chkconfig --level 345 omniEvents on
+
+# Run nodeconfig as the user
+USER ${RHUSER}
+
+# Change back to user's directory
+WORKDIR ${HOME}
+
+# Downstream image kicks off as root user
 ONBUILD USER root
 
 EXPOSE 2809
