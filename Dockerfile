@@ -37,7 +37,13 @@ RUN chown -R ${RHUSER}. ${HOME}
 RUN usermod -a -G wheel --shell /bin/bash ${RHUSER}
 RUN echo "%wheel        ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
 
-# Forward environment variables to downstream images
+# Switch to the user and change to user directory
+USER ${RHUSER}
+WORKDIR ${HOME}
+
+# Downstream image kicks off as root user
+# And gains environment variables
+ONBUILD USER root
 ONBUILD ENV RHUSER ${RHUSER}
 ONBUILD ENV HOME ${HOME}
 ONBUILD ENV OSSIEHOME ${OSSIEHOME}
@@ -45,20 +51,8 @@ ONBUILD ENV SDRROOT ${SDRROOT}
 ONBUILD ENV PYTHONPATH ${PYTHONPATH}
 ONBUILD ENV PATH ${PATH}
 
-# Clean and configure omni to kickoff on startup
-RUN ${OSSIEHOME}/bin/cleanomni
-RUN /sbin/chkconfig --level 345 omniNames on
-RUN /sbin/chkconfig --level 345 omniEvents on
-
-# Run nodeconfig as the user
-USER ${RHUSER}
-
-# Change back to user's directory
-WORKDIR ${HOME}
-
-# Downstream image kicks off as root user
-ONBUILD USER root
-
+# Expose omni's ports
 EXPOSE 2809
 EXPOSE 11169
+
 CMD ["/bin/bash", "-l"]

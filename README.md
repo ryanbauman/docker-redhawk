@@ -7,7 +7,10 @@ The default command for this image runs a bash shell as the 'redhawk' user.  Thi
 
 	docker run -i -t ryanbauman/redhawk
 
-The image comes with the omniNames and omniEvents servers installed and configured to run automatically on startup.
+The image comes with the omniNames and omniEvents servers installed and configured.  Start them with if you are not running the services elsewhere on the local host (per omniORB.cfg):
+
+    sudo service omniNames start
+    sudo service omniEvents start
 
 # REDHAWK IDE support
 The REDHAWK IDE has been intentionally omitted from the yum repository this image draws from. To enable IDE support in your docker container, download the standalone IDE from sourceforge and invoke the image appropriately.
@@ -35,4 +38,5 @@ Install minimal gtk support:
 Verify that the REDHAWK IDE can be launched and displays correctly on the host system:
 
     ./eclipse/eclipse &
+
 
